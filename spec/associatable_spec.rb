@@ -1,4 +1,4 @@
-require 'active_record_lite'
+require 'jacktive-record'
 
 describe "associatable" do
   before(:all) do
