@@ -37,6 +37,7 @@ class SQLObject < MassObject
 
   def attribute_values
     arr = self.instance_variables.map do |var|
+    	next if var == :@id
       self.instance_variable_get(var)
     end
   end
