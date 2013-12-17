@@ -25,8 +25,14 @@ p Human.all
 p Cat.all
 
 c = Cat.new(:name => "Gizmo", :owner_id => 1)
+line = c.instance_variables.map do |var|
+  "#{var} = ?".gsub(/@/, "")
+end
+
+p line.join(", ")
 c.save
 
 h = Human.find(1)
+p h.instance_variables
 # just run an UPDATE; no values changed, so shouldnt hurt the db
 h.save
