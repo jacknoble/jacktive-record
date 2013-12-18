@@ -5,6 +5,9 @@ require_relative './searchable'
 require 'active_support/inflector'
 require 'debugger'
 
+
+
+
 class SQLObject < MassObject
 
   extend Searchable
@@ -45,8 +48,10 @@ class SQLObject < MassObject
   # use send and map to get instance values.
   # after, update the id attribute with the helper method from db_connection
   def create
-    col_string = self.instance_variables.join(", ").gsub(/@/, "")
-    qmark_string = Array.new(self.instance_variables.count){"?"}.join(", ")
+    col_array = self.instance_variables
+    col_array.delete(@id)#you don't get to assign an object's id
+    qmark_string = Array.new(col_array.count){"?"}.join(", ")
+    col_string =  col_array.join(", ").gsub(/@/, "")
     DBConnection.execute(<<-SQL, *attribute_values )
       INSERT INTO #{self.class.table_name}
         (#{col_string})
