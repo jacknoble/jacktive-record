@@ -5,34 +5,23 @@ require_relative './searchable'
 require 'active_support/inflector'
 require 'debugger'
 
-
-
-
 class SQLObject < MassObject
 
   extend Searchable
   extend Associatable
-  # sets the table_name
+ 
   def self.set_table_name(table_name = nil)
-    if table_name.nil?
-      @table_name = self.to_s.underscore.pluralize
-    else
       @table_name = table_name
-    end
   end
 
-  # gets the table_name
   def self.table_name
-    self.set_table_name if @table_name.nil?
-    @table_name
+    (@table_name.nil?) ? self.to_s.underscore.pluralize : @table_name
   end
 
   def self.all
     parse_all(DBConnection.execute("SELECT * FROM #{self.table_name}"))
   end
 
-  # querys database for record of this type with id passed.
-  # returns either a single object or nil.
   def self.find(id)
     object = DBConnection.execute("SELECT * FROM #{self.table_name} WHERE id = ?", id)[0]
     (object) ? self.new(object) : nil
@@ -68,11 +57,11 @@ class SQLObject < MassObject
     end
     set_line = set_line.join(", ")
     table = self.class.table_name
-    DBConnection.execute(<<-SQL, *attribute_values )
+    DBConnection.execute(<<-SQL, *attribute_values, self.id )
       UPDATE #{table}
       SET #{set_line}
       WHERE
-        id = #{self.id}
+        id = ?
     SQL
   end
 
